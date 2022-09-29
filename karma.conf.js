@@ -1,6 +1,8 @@
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/1.0/config/configuration-file.html
 
+const { browser } = require('protractor');
+
 module.exports = function (config) {
   config.set({
     basePath: '',
@@ -25,19 +27,34 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/tour-to-hero-new'),
-      subdir: '.',
+      dir: require('path').join(__dirname, './coverage/'),
+      subdir: (browser) => browser.toLowerCase().split(/[' ']/)[0] + '/report',
       reporters: [
         { type: 'html' },
         { type: 'text-summary' }
-      ]
+      ],
+      check: {
+        emitWarning: true,
+        global: {
+          statements: 90,
+          branches: 80,
+          functions: 90,
+          lines: 80
+        }
+      }
     },
     reporters: ['progress', 'kjhtml'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadlessCI'],
+    customLaunchers: {
+      ChromeHeadlessCI: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox']
+      }
+    },
     singleRun: false,
     restartOnFileChange: true
   });
